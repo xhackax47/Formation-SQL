@@ -317,5 +317,46 @@ WHERE m.login = 'lorde'
 AND e.debut < CURRENT_DATE
 GROUP BY lieu; 
 
+-- Créer et utiliser une Procédure stockée 
+
+DROP PROCEDURE IF EXISTS ajouteMembre;
+DELIMITER //
+CREATE PROCEDURE ajouteMembre(IN inLogin VARCHAR(25), IN inPrenom VARCHAR(50))
+BEGIN
+    INSERT INTO membres
+    (login, prenom)
+
+    VALUES
+    (inLogin, inPrenom);
+
+END; //
+    DELIMITER ;
+
+CALL ajouteMembre('Denver', 'le Dernier Dinosaure');
+
+-- Deuxieme procedure avec transaction
+
+DROP PROCEDURE IF EXISTS ajouteMembre2;
+DELIMITER //
+CREATE PROCEDURE ajouteMembre2(
+    IN inLogin VARCHAR(25),
+    IN inPrenom VARCHAR(30),
+    IN inLogin2 VARCHAR(25),
+    IN inPrenom2 VARCHAR(30)
+    )
+BEGIN
+  DECLARE exit handler for sqlexception
+  BEGIN
+    ROLLBACK;
+  END;
+
+  START TRANSACTION;
+    INSERT INTO `membres` (`login`, `prenom`) VALUES (inLogin, inPrenom);
+    INSERT INTO `membres` (`login`, `prenom`) VALUES (inLogin2, inPrenom2);
+    COMMIT;
+END; //
+    DELIMITER ;
+
+CALL ajouteMembre2('Babe', 'le Cochon', 'Tonerre', 'Etalon');
 
 */
