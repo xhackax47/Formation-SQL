@@ -14,3 +14,26 @@ _ SELECT * FROM abonne WHERE age(date_naissance) < '20 YEARS'
 _ SELECT nom, prenom, date_naissance FROM abonne WHERE age(date_naissance) < interval '20 YEARS' ORDER BY date_naissance
 _ SELECT nom, prenom, date_naissance FROM abonne WHERE date_part('year', age(date_naissance)) < 20 ORDER BY date_naissance
 // RECUP ABOS DONT AGE <= 20
+
+_ SELECT count(*) FROM abonne WHERE age(date_naissance) < '40 YEARS' AND age(date_naissance) >'30 YEARS'
+_ SELECT count(*) FROM abonne WHERE age(date_naissance) BETWEEN '40 YEARS' AND '30 YEARS'
+// COMPTER LE NOMBRE D'ABONNES ENTRE 30 ET 40 ANS
+
+SELECT count(*)AS c, ville FROM abonne GROUP BY ville ORDER BY c desc
+// AFFICHER NOMBRE ABOS POUR CHAQUE VILLE ET TRIER PAR ORDRE DESC
+
+_ SELECT count(*)AS c,ville FROM abonne GROUP BY ville HAVING count(*)>=20 ORDER BY c desc
+_ SELECT count(*) AS c, UPPER(ville) AS v FROM abonne GROUP BY v HAVING count(*)>=20 ORDER BY c DESC
+// AFFICHER NOMBRE ABOS POUR CHAQUE VILLE (Minimum 20) ET TRIER PAR ORDRE DESC, la deuxième pour transformer tous les noms en MAJS et les comparer
+
+SELECT nom, CASE WHEN date_fin_abo >= current_date THEN 'est abonné jusqu''au ' || to_char(date_fin_abo, 'dd/mm/yyyy') ELSE 'Expiré' END FROM abonne WHERE nom like 'A%'
+// RECUP ABOS DONT NOM COMMENCE PAR A ET AFFICHER STATUT ABONNEMENT
+
+SELECT count(*) AS C, MAX(date_naissance) AS minAge, MIN(date_naissance) AS maxAge  FROM abonne GROUP BY nom
+// COMPTER NBR MEMBRE FAMILLE ET RETOURNER DATE NAISSANCE PLUS VIEUX ET PLUS JEUNE
+
+SELECT count(*) AS C FROM abonne GROUP BY trunc(date_part('year', (age(date_naissance))/10))
+SELECT count(*) AS CountTrancheAge, trunc(date_part('year', (age(date_naissance))/10)) AS TrancheAge FROM abonne GROUP BY TrancheAge ORDER BY TrancheAge
+SELECT count(*) AS CountTrancheAge, trunc(date_part('year', (age(date_naissance))/10)) AS TrancheAge, trunc(date_part('year', (age(date_naissance))/10))*10 AS MinTrancheAge, trunc(date_part('year', (age(date_naissance))/10))*10+10 AS MaxTrancheAge FROM abonne GROUP BY TrancheAge ORDER BY TrancheAge
+SELECT count(*) AS CountTrancheAge, concat(trunc(date_part('year', (age(date_naissance))/10))*10, ' à ', trunc(date_part('year', (age(date_naissance))/10))*10+10) AS TrancheAge FROM abonne GROUP BY TrancheAge ORDER BY TrancheAge
+// CALCULER LE NOMBRE D'ABONNES PAR TRANCHE D'AGE (10/20 ans, 20/30 ans)
