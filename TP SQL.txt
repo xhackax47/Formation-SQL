@@ -1,0 +1,16 @@
+-- SELECT * FROM abonne WHEREville ='MONTPELLIER' ORDER BY prenom, nom 
+// RECUP ABONNES HABITANT MTP ET TRIER PAR ORDRE ALPHABETIQUE
+
+-- SELECT distinct prenom FROM abonne WHERE prenom like 'L%' 
+// LISTER LES PRENOMS DIFFERENTS QUI COMMENCENT PAR L
+
+-- SELECT Concat(upper(nom),' ', prenom) FROM abonne WHERE ville ='MONTPELLIER' ORDER BY nom, prenom 
+// RECUP ABOS HABITANT MTP SANS TENIR COMPTE MAJS ET MINS, TRIER ALPH ET SOUS FORME "NOM Prénom"
+
+-- SELECT * FROM abonne WHERE date_fin_abo >= current_date
+// RECUP ABOS DONT ABONNEMENT EST VALIDE
+
+_ SELECT * FROM abonne WHERE age(date_naissance) < '20 YEARS'
+_ SELECT nom, prenom, date_naissance FROM abonne WHERE age(date_naissance) < interval '20 YEARS' ORDER BY date_naissance
+_ SELECT nom, prenom, date_naissance FROM abonne WHERE date_part('year', age(date_naissance)) < 20 ORDER BY date_naissance
+// RECUP ABOS DONT AGE <= 20
