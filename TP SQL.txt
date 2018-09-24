@@ -39,3 +39,36 @@ SELECT count(*) AS CountTrancheAge, trunc(date_part('year', (age(date_naissance)
 SELECT count(*) AS CountTrancheAge, trunc(date_part('year', (age(date_naissance))/10)) AS TrancheAge, trunc(date_part('year', (age(date_naissance))/10))*10 AS MinTrancheAge, trunc(date_part('year', (age(date_naissance))/10))*10+10 AS MaxTrancheAge FROM abonne GROUP BY TrancheAge ORDER BY TrancheAge
 SELECT count(*) AS CountTrancheAge, concat(trunc(date_part('year', (age(date_naissance))/10))*10, ' à ', trunc(date_part('year', (age(date_naissance))/10))*10+10) AS TrancheAge FROM abonne GROUP BY TrancheAge ORDER BY TrancheAge
 // CALCULER LE NOMBRE D'ABONNES PAR TRANCHE D'AGE (10/20 ans, 20/30 ans)
+
+SELECT DISTINCT l.titre AS TitreLivre, Auth.nom AS NomAuteur, Edit.nom AS NomEditeur FROM livre AS L LEFT OUTER JOIN auteur AS Auth ON l.id_auteur = Auth.id LEFT OUTER JOIN editeur AS Edit ON l.id_editeur = Edit.id
+// LISTER TOUS LES LIVRES AVEC AUTEUR ET EDITEUR
+
+SELECT DISTINCT e.nom as Editeur, count(l.titre) as NbLivres FROM editeur AS e JOIN livre AS l ON l.id_editeur = e.id GROUP BY e.id ORDER BY NbLivres desc
+// LISTER TOUS LES EDITEURS AVEC LE NOMBRE DE LIVRES CHACUN
+
+SELECT DISTINCT l.titre as TitreLivre, abonne.nom,abonne.prenom,e.date_retour FROM emprunt AS e LEFT OUTER JOIN livre AS l ON l.id = id_livre LEFT OUTER JOIN abonne ON e.id_abonne=abonne.id WHERE e.date_retour is NULL
+// LISTER TOUS LES LIVRES ACTUELLEMENT EMPRUNTES
+
+SELECT DISTINCT a.nom, a.prenom FROM emprunt as e LEFT JOIN abonne AS a ON e.id_abonne=a.id WHERE e.date_retour is NULL AND date_part('MONTH', age(e.date_emprunt)) >= 2
+// LISTER LES ABONNES AYANT EMPRUNTE LIVRE DEPUIS + DE 2 MOIS
+
+SELECT DISTINCT count(e.*) as NbLivreEmprunt, a.nom FROM emprunt AS E JOIN abonne AS a ON e.id_abonne = a.id GROUP BY a.nom ORDER BY NbLivreEmprunt desc LIMIT 10
+// TROUVER LES 10 ABONNES AYANT EMPRUNTE LE PLUS DE LIVRES
+
+SELECT DISTINCT count(e.*) as NbLivreNonRetourne, a.nom, a.prenom, a.id FROM emprunt AS e JOIN abonne AS a ON e.id_abonne = a.id WHERE date_retour is NULL GROUP BY a.id, a.nom, a.prenom HAVING COUNT (e.*) > 1 ORDER BY NbLivreNonRetourne desc
+// TROUVER LES ABONNES AYANT PLUSIEURS LIVRE EN LEUR POSSESSION
+
+SELECT DISTINCT count(e.*) as NbLivreParCat, TRIM(categorie) as Categorie FROM emprunt AS e JOIN livre AS l ON e.id_livre = l.id GROUP BY TRIM(categorie) ORDER BY NbLivreParCat desc
+// LISTER LES CATEGORIES LES PLUS LUES
+
+SELECT a.nom, (SELECT l.titre FROM livre AS l RIGHT JOIN emprunt e ON l.id = e.id_livre WHERE a.id = e.id_abonne ORDER BY e.date_emprunt desc LIMIT 1) FROM abonne AS a
+// LISTER LES ABONNES AVEC LE DERNIER LIVRE EMPRUNTE
+
+SELECT l.titre, (SELECT count(e.*) FROM emprunt e WHERE e.id_livre = l.id GROUP BY l.id) AS NbEmprunts FROM livre l ORDER BY NbEmprunts desc LIMIT 10
+// LISTER LES 10 LIVRES LES PLUS EMPRUNTES
+
+SELECT abonne.nom, abonne.prenom, l.titre, emprunt.date_emprunt FROM abonne JOIN emprunt ON emprunt.id_abonne = abonne.id AND emprunt.date_emprunt = (SELECT MAX(date_emprunt) FROM emprunt e2 WHERE e2.id_abonne = abonne.id) JOIN livre l ON l.id = emprunt.id_livre ORDER BY abonne.nom, abonne.prenom
+// LISTER TOUS LES ABOS AVEC DERNIER LIVRE EMPRUNTE
+
+SELECT l.titre, l.genre, l.categorie FROM livre l WHERE l.id_auteur=(SELECT aut.id FROM auteur aut WHERE aut.nom = 'GUDULE') OR l.id_auteur=(SELECT aut.id FROM auteur aut WHERE aut.nom = 'UBAC Claire') ORDER BY l.titre
+// LISTER TOUS LES LIVRES DE L'AUTEUR GUDULE ou UBAC Claire
