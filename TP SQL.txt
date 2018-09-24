@@ -71,4 +71,5 @@ SELECT abonne.nom, abonne.prenom, l.titre, emprunt.date_emprunt FROM abonne JOIN
 // LISTER TOUS LES ABOS AVEC DERNIER LIVRE EMPRUNTE
 
 SELECT l.titre, l.genre, l.categorie FROM livre l WHERE l.id_auteur=(SELECT aut.id FROM auteur aut WHERE aut.nom = 'GUDULE') OR l.id_auteur=(SELECT aut.id FROM auteur aut WHERE aut.nom = 'UBAC Claire') ORDER BY l.titre
+SELECT livre.titre, auteur.nom FROM livre JOIN auteur ON livre.id_auteur = auteur.id WHERE auteur.nom IN (SELECT nom FROM auteur WHERE nom ='GUDULE' OR nom='UBAC Claire')
 // LISTER TOUS LES LIVRES DE L'AUTEUR GUDULE ou UBAC Claire
